@@ -28,8 +28,8 @@ docker_build:
 
   script:
     - docker build -t registry.gitlab.verimi.cloud/$CI_PROJECT_PATH:$CI_COMMIT_SHA .
-    - docker push registry.gitlab.verimi.cloud/$CI_PROJECT_PATH:$CI_COMMIT_SHA
-    - docker push registry.gitlab.verimi.cloud/$CI_PROJECT_PATH:latest
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker push $CI_REGISTRY_IMAGE:latest
 
 
 container_scanning:
