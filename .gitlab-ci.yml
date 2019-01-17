@@ -16,7 +16,7 @@ build:
 
 docker_build:
   stage: package
-  image: docker:dind
+  image: docker:stable-dind
   variables:
     DOCKER_HOST: "tcp://localhost:2375/"
   services:
@@ -33,6 +33,7 @@ container_scanning:
   stage: test
   image: docker:stable
   variables:
+    DOCKER_HOST: "tcp://localhost:2375/"
     DOCKER_DRIVER: overlay2
     ## Define two new variables based on GitLab's CI/CD predefined variables
     ## https://docs.gitlab.com/ee/ci/variables/#predefined-variables-environment-variables
