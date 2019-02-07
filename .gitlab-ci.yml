@@ -93,6 +93,6 @@ deploy-dev:
     name: development
   image: linkyard/docker-helm
   script:
-    - helm template helm --name $CI_PROJECT_NAME --namespace ci -f helm/values.yaml --set image.tag=$CI_COMMIT_SHA > $HOME/$CI_PROJECT_NAME.yaml
-    - kubectl apply -f $HOME/$CI_PROJECT_NAME.yaml
+    - helm template helm --name $CI_PROJECT_NAME --namespace verimi -f helm/values.yaml --set image.tag=$CI_COMMIT_SHA > $HOME/$CI_PROJECT_NAME.yaml
+    - kubectl apply -n verimi -f $HOME/$CI_PROJECT_NAME.yaml
 
