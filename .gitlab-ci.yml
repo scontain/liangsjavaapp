@@ -6,7 +6,7 @@ stages:
 
 build:
   stage: build
-  tag:
+  tags:
     - development
   image: openjdk:8-jdk-stretch
   script:
@@ -18,7 +18,7 @@ build:
 
 docker_build:
   stage: package
-  tag:
+  tags:
     - development
   image: docker:stable-dind
   variables:
@@ -35,7 +35,7 @@ docker_build:
 
 container_scanning:
   stage: test
-  tag:
+  tags:
     - development
   image: docker:stable
   variables:
@@ -71,7 +71,7 @@ container_scanning:
 
 sast:
   image: docker:stable
-  tag:
+  tags:
     - development
   stage: test
   variables:
@@ -92,7 +92,7 @@ sast:
       sast: gl-sast-report.json
 
 deploy-dev:
-  tag:
+  tags:
     - development
   stage: deploy
   only:
