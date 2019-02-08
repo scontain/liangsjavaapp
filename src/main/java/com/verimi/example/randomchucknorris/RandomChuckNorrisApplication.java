@@ -3,6 +3,7 @@ package com.verimi.example.randomchucknorris;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.*;
@@ -11,9 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 
 @SpringBootApplication
@@ -24,6 +23,8 @@ public class RandomChuckNorrisApplication {
 		SpringApplication.run(RandomChuckNorrisApplication.class, args);
 	}
 
+	private static Map<String, List<String>> jokes = new HashMap<>();
+
 	@Component
 	@EnableScheduling
 	public static class RandomLog {
@@ -31,6 +32,9 @@ public class RandomChuckNorrisApplication {
 
 		final RestTemplate restTemplate = new RestTemplate();
 		public static final String URL_PATTERN = "https://api.chucknorris.io/jokes/random?category=";
+
+		@Value("${application.jokescontainer.capacity}")
+		private int capacity;
 
 		@Scheduled(cron = "${application.random.cron}")
 		public void randomChuckNorris() {
@@ -48,8 +52,28 @@ public class RandomChuckNorrisApplication {
 		}
 
 		private String chuckSays(String category) {
+
+			final Random random = new Random();
+			int i = random.nextInt(capacity);
+
+			if (!jokes.containsKey(category)) {
+				jokes.put(category, new ArrayList<>());
+			}
+
+			final List<String> jokesByCategory = jokes.get(category);
+
+			if (jokesByCategory.size() > capacity) {
+				log.warn("Beyond the jokescontainer capacity, return one existing joke");
+				return jokesByCategory.get(i);
+			}
+
 			final ResponseEntity<JsonNode> map = restTemplate.exchange(URL_PATTERN + category, HttpMethod.GET, requestEntity(), JsonNode.class);
-			return map.getBody().get("value").asText("Chuck Norris");
+			final String joke = map.getBody().get("value").asText("Chuck Norris");
+
+			jokesByCategory.add(joke);
+			jokes.put(category, jokesByCategory);
+
+			return joke;
 		}
 
 		private static HttpEntity requestEntity() {
