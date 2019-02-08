@@ -1,7 +1,6 @@
 stages:
   - build
   - package
-  - test
   - deploy
 
 build:
@@ -32,64 +31,6 @@ docker_build:
   script:
     - docker build -t $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG:$CI_COMMIT_SHA .
     - docker push $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG:$CI_COMMIT_SHA
-
-container_scanning:
-  stage: test
-  tags:
-    - development
-  image: docker:stable
-  variables:
-    DOCKER_HOST: "tcp://localhost:2375/"
-    DOCKER_DRIVER: overlay2
-    ## Define two new variables based on GitLab's CI/CD predefined variables
-    ## https://docs.gitlab.com/ee/ci/variables/#predefined-variables-environment-variables
-    CI_APPLICATION_REPOSITORY: $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG
-    CI_APPLICATION_TAG: $CI_COMMIT_SHA
-  allow_failure: true
-  services:
-    - docker:stable-dind
-  before_script:
-    - docker info
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  script:
-    - docker run -d --name db arminc/clair-db:latest
-    - docker run -p 6060:6060 --link db:postgres -d --name clair --restart on-failure arminc/clair-local-scan:v2.0.1
-    - apk add -U wget ca-certificates
-    - docker pull ${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG}
-    - wget https://github.com/arminc/clair-scanner/releases/download/v8/clair-scanner_linux_amd64
-    - mv clair-scanner_linux_amd64 clair-scanner
-    - chmod +x clair-scanner
-    - touch clair-whitelist.yml
-    - while( ! wget -q -O /dev/null http://localhost:6060/v1/namespaces ) ; do sleep 1 ; done
-    - retries=0
-    - echo "Waiting for clair daemon to start"
-    - while( ! wget -T 10 -q -O /dev/null http://localhost:6060/v1/namespaces ) ; do sleep 1 ; echo -n "." ; if [ $retries -eq 10 ] ; then echo " Timeout, aborting." ; exit 1 ; fi ; retries=$(($retries+1)) ; done
-    - ./clair-scanner -c http://localhost:6060 --ip $(hostname -i) -r gl-container-scanning-report.json -l clair.log -w clair-whitelist.yml ${CI_APPLICATION_REPOSITORY}:${CI_APPLICATION_TAG} || true
-  artifacts:
-    reports:
-      container_scanning: gl-container-scanning-report.json
-
-sast:
-  image: docker:stable
-  tags:
-    - development
-  stage: test
-  variables:
-    DOCKER_HOST: "tcp://localhost:2375/"
-    DOCKER_DRIVER: overlay2
-  allow_failure: true
-  services:
-    - docker:stable-dind
-  script:
-    - export SP_VERSION=$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')
-    - docker run
-      --env SAST_CONFIDENCE_LEVEL="${SAST_CONFIDENCE_LEVEL:-3}"
-      --volume "$PWD:/code"
-      --volume /var/run/docker.sock:/var/run/docker.sock
-      "registry.gitlab.com/gitlab-org/security-products/sast:$SP_VERSION" /app/bin/run /code
-  artifacts:
-    reports:
-      sast: gl-sast-report.json
  
 
 deploy-dev:
@@ -107,5 +48,7 @@ deploy-dev:
     - helm repo add verimi https://charts.prod.tools.verimi.cloud --username=$HELM_REPO_USERNAME --password=$HELM_REPO_PASSWORD
     - helm repo update
     - helm search verimi/
-    - helm upgrade --install verimi/random-chuck-norris --version $HELM_REPO_VERSION $CI_PROJECT_NAME --namespace verimi -f helm/values.yaml --set image.repository=$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG --set image.tag=$CI_COMMIT_SHA 
+    - helm fetch verimi/random-chuck-norris
+    - ls -la
+    - helm upgrade --install $CI_PROJECT_NAME verimi/random-chuck-norris --version $HELM_REPO_VERSION --namespace verimi --set image.repository=$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG --set image.tag=$CI_COMMIT_SHA 
 
