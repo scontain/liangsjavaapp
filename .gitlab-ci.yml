@@ -107,5 +107,5 @@ deploy-dev:
     - helm repo add verimi https://charts.prod.tools.verimi.cloud --username=$HELM_REPO_USERNAME --password=$HELM_REPO_PASSWORD
     - helm repo update
     - helm search verimi/
-    - helm install verimi/random-chuck-norris --version $HELM_REPO_VERSION --name $CI_PROJECT_NAME --namespace verimi -f helm/values.yaml --set image.repository=$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG --set image.tag=$CI_COMMIT_SHA 
+    - helm upgrade --install verimi/random-chuck-norris --version $HELM_REPO_VERSION $CI_PROJECT_NAME --namespace verimi -f helm/values.yaml --set image.repository=$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG --set image.tag=$CI_COMMIT_SHA 
 
