@@ -102,6 +102,7 @@ deploy-dev:
     name: development
   image: mstrzelecki/docker-helm-kubectl:helm_2_12_2-kubectl_1_12_3 
   script:
+    - env
     - env | grep HELM
     - helm init --client-only
     - helm repo add verimi https://charts.prod.tools.verimi.cloud --username=$HELM_REPO_USERNAME --password=$HELM_REPO_PASSWORD
