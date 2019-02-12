@@ -16,7 +16,7 @@ include:
     file: '/templates/common-container-scanning.yml'
   - project: 'feature-team/gitlab-pipeline-templates'
     ref: master
-    file: '/templates/common-static-application-security-testing.yml'
+    file: '/templates/common-sast.yml'
   - project: 'feature-team/gitlab-pipeline-templates'
     ref: master
     file: '/templates/common-helm-deploy.yml'
