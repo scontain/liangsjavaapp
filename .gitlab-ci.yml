@@ -10,19 +10,19 @@ stages:
 
 include:
   - project: 'feature-team/gitlab-pipeline-templates'
-    ref: master
+    ref: v0.0.1
     file: '/templates/common-build.yml'
   - project: 'feature-team/gitlab-pipeline-templates'
-    ref: master
+    ref: v0.0.1
     file: '/templates/common-docker.yml'
   - project: 'feature-team/gitlab-pipeline-templates'
-    ref: master
+    ref: v0.0.1
     file: '/templates/common-container-scanning.yml'
   - project: 'feature-team/gitlab-pipeline-templates'
-    ref: master
+    ref: v0.0.1
     file: '/templates/common-sast.yml'
   - project: 'feature-team/gitlab-pipeline-templates'
-    ref: master
+    ref: v0.0.1
     file: '/templates/common-helm-deploy.yml'
 
 build:
