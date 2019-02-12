@@ -4,6 +4,10 @@ stages:
   - test
   - deploy
 
+.job_template: &job_tags
+  tags:
+    - development
+
 include:
   - project: 'feature-team/gitlab-pipeline-templates'
     ref: master
@@ -24,32 +28,27 @@ include:
 build:
   extends: .common-build:build
   stage: build
-  tags:
-    - development
+  <<: *job_tags
 
 docker_build:
   extends: .common-docker:image-build
   stage: package
-  tags:
-    - development
+  <<: *job_tags
 
 container_scanning:
   extends: .common-container-scanning:container-scanning
   stage: test
-  tags:
-    - development
+  <<: *job_tags
 
 sast:
   extends: .common-sast:sast
   image: docker:stable
-  tags:
-    - development
+  <<: *job_tags
   stage: test
 
 deploy-dev:
   extends: .common-helm-deploy:deploy
-  tags:
-    - development
+  <<: *job_tags
   stage: deploy
   only:
     - master
