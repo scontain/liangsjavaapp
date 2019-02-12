@@ -1,4 +1,5 @@
 stages:
+  - prepare
   - build
   - package
   - test
@@ -26,7 +27,12 @@ include:
     file: '/templates/common-helm-deploy.yml'
   - project: 'feature-team/gitlab-pipeline-templates'
     ref: master
-    file: '/templates/common-variables.yml'
+    file: '/templates/common-prepare.yml'
+
+prepare:
+  extends: .common-prepare:prepare
+  stage: prepare
+  <<: *job_tags
 
 test:
   stage: build
