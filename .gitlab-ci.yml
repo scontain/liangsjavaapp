@@ -28,12 +28,6 @@ include:
     ref: master
     file: '/templates/common-variables.yml'
 
-test:
-    stage: build
-    <<: *job_tags
-    script: 
-    - "echo $TEST"
-
 build:
   extends: .common-build:build
   stage: build
