@@ -50,5 +50,11 @@ deploy-dev:
   extends: .common-helm-deploy:deploy
   <<: *job_tags
   stage: deploy
+  variables:
+    NAMESPACE: verimi
+    HELM_CHART_REPO: https://charts.prod.tools.verimi.cloud
+    HELM_CHART_REPO_USERNAME: $HELM_REPO_USERNAME
+    HELM_CHART_REPO_PASSWORD: $HELM_REPO_PASSWORD
+    HELM_CHART_REPO_VERSION: $HELM_REPO_VERSION
   only:
     - master
