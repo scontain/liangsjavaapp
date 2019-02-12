@@ -28,6 +28,14 @@ include:
     ref: master
     file: '/templates/common-variables.yml'
 
+test:
+  stage: build
+  <<: *job_tags
+  script:
+    - "echo $HELM_REPO_USERNAME"
+    - "echo $HELM_REPO_PASSWORD"
+    - "echo $HELM_REPO_VERSION"
+
 build:
   extends: .common-build:build
   stage: build
