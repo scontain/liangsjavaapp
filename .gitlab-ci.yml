@@ -29,8 +29,8 @@ include:
     ref: master
     file: '/templates/common-prepare.yml'
 
-prepare:
-  extends: .common-prepare:prepare
+prepare-variables:
+  extends: .common-prepare:prepare-variables
   stage: prepare
   <<: *job_tags
 
