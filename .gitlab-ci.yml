@@ -29,6 +29,10 @@ build:
   extends: .common-build:build
   stage: build
   <<: *job_tags
+  artifacts:
+    paths: 
+      - build/libs/*.jar
+    
 
 docker_build:
   extends: .common-docker:image-build
