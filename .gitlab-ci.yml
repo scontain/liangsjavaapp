@@ -24,6 +24,15 @@ include:
   - project: 'feature-team/gitlab-pipeline-templates'
     ref: v0.0.1
     file: '/templates/common-helm-deploy.yml'
+  - project: 'feature-team/gitlab-pipeline-templates'
+    ref: master
+    file: '/templates/common-variables.yml'
+
+test:
+    stage: build
+    <<: *job_tags
+    script: 
+    - "echo $TEST"
 
 build:
   extends: .common-build:build
