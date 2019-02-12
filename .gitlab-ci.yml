@@ -29,26 +29,3 @@ build:
   extends: .common-build:build
   stage: build
   <<: *job_tags
-
-docker_build:
-  extends: .common-docker:image-build
-  stage: package
-  <<: *job_tags
-
-container_scanning:
-  extends: .common-container-scanning:container-scanning
-  stage: test
-  <<: *job_tags
-
-sast:
-  extends: .common-sast:sast
-  image: docker:stable
-  <<: *job_tags
-  stage: test
-
-deploy-dev:
-  extends: .common-helm-deploy:deploy
-  <<: *job_tags
-  stage: deploy
-  only:
-    - master
