@@ -21,9 +21,6 @@ include:
   - project: 'feature-team/gitlab-pipeline-templates'
     ref: v0.0.3
     file: '/templates/common-sast.yml'
-  - project: 'feature-team/gitlab-pipeline-templates'
-    ref: v0.0.3
-    file: '/templates/common-helm-deploy.yml'
 
 build:
   extends: .common-build:build
@@ -49,15 +46,3 @@ sast:
   <<: *job_tags
   stage: test
 
-deploy-dev:
-  extends: .common-helm-deploy:deploy
-  <<: *job_tags
-  stage: deploy
-  variables:
-    NAMESPACE: verimi
-    HELM_CHART_REPO: https://charts.prod.tools.verimi.cloud
-    HELM_CHART_REPO_USERNAME: $HELM_REPO_USERNAME
-    HELM_CHART_REPO_PASSWORD: $HELM_REPO_PASSWORD
-    HELM_CHART_REPO_VERSION: $HELM_REPO_VERSION
-  only:
-    - master
