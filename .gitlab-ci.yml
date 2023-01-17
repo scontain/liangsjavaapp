@@ -6,7 +6,7 @@ stages:
 
 .job_template: &job_tags
   tags:
-    - development
+    - dev
 
 include:
   - project: 'feature-team/gitlab-pipeline-templates'
