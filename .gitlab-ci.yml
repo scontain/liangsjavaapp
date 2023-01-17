@@ -20,7 +20,7 @@ build:
     - export VERSION_SUFFIX="$(if [[ $(echo $CI_COMMIT_REF_NAME|cut -c 1-7) == RELEASE ]] || [[ $(echo $CI_COMMIT_REF_NAME|cut -c 1-7) == release ]]; then echo ''; else echo '-SNAPSHOT';fi)"
     - export VERSION="$(echo ${CI_BUILD_ID}-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_NAME} | tr '/' '_')${VERSION_SUFFIX}"
     - echo ${VERSION}
-    - ./gradlew clean build publish -Pversion=${VERSION}
+    - ./gradlew clean build -Pversion=${VERSION}
 
 
 docker_build:
