@@ -1,0 +1,26 @@
+apiVersion: scone/5.8
+kind: genservice
+
+# define environment variables
+#  - local ones are only visible for this service
+#  - global ones are defined for all services in a mesh
+
+environment:
+  local:
+    - name: SCONE_HEAP
+      value: 4G
+    - name: SCONE_LOG
+      value: error
+    - name: SCONE_ALLOW_DLOPEN
+      value: 1
+
+build:
+  name: java8-postgres
+  kind: java
+  to: registry.scontain.com/vasyl/test-images:java8-postgres
+  pwd: /java
+  command: java -jar build/libs/random-chuck-norris-0.0.1-SNAPSHOT.jar
+  copy:
+    - build/libs/random-chuck-norris-0.0.1-SNAPSHOT.jar
+  signature:
+    sign: true
