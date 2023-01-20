@@ -22,9 +22,16 @@ public class RandomLogScheduler {
     }
 
     @Scheduled(cron = "${application.random.cron}")
-    public void randomChuckNorris() {
+    public void randomChuckNorrisJoke() {
         if (enabled) {
-            log.error(randomLogService.getJoke());
+            log.error("chuck is joking: " + randomLogService.getJoke());
+        }
+    }
+
+    @Scheduled(cron = "${application.random.gossip.cron}")
+    public void randomChuckNorrisGossip() {
+        if (enabled) {
+            log.error("chuck is gossiping: " + randomLogService.getGossip());
         }
     }
 }
