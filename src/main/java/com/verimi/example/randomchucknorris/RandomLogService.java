@@ -31,7 +31,7 @@ public class RandomLogService {
         } else if (i == 1) {
             return chuckSays("career");
         } else {
-            return chuckSays("political");
+            return chuckSays("dev");
         }
     }
 
