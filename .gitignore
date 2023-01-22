@@ -25,3 +25,12 @@
 /dist/
 /nbdist/
 /.nb-gradle/
+
+### runs.sh
+
+service.yaml
+mesh.yaml
+mesh_out.yaml
+old_run.sh
+release.sh
+target/

@@ -11,16 +11,22 @@ environment:
       value: 4G
     - name: SCONE_LOG
       value: error
-    - name: SCONE_ALLOW_DLOPEN
+    - name: SCONE_ALLOW_DLOPEN # only permit authenticated shared libraries
+      value: 1
+    - name: SCONE_MPROTECT # required for Java
+      value: 1
+    - name: SCONE_QUEUES # reduce the number of threads
       value: 1
 
 build:
   name: java8-postgres
   kind: java
-  to: registry.scontain.com/vasyl/test-images:java8-postgres
+  to: $APP_IMAGE_REPO/java_hello_user:java8-postgres
   pwd: /java
   command: java -jar build/libs/random-chuck-norris-0.0.1-SNAPSHOT.jar
   copy:
     - build/libs/random-chuck-norris-0.0.1-SNAPSHOT.jar
+  host_path:
+    - /etc/ssl/certs  # danger zone: permit access to all CA certificates
   signature:
     sign: true
