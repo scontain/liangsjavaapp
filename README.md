@@ -2,7 +2,36 @@
 
 ./start.sh
 
-## Test application
+## Deploy app with `sconectl` (Postgresql still native)
+
+Install `postgresql` with helm.
+
+Note: If you do not have the bitnami Helm repo, install with `helm repo add bitnami https://charts.bitnami.com/bitnami`.
+
+```bash
+# user and password are defined in application.properties file.
+helm install postgresql bitnami/postgresql \
+    --set auth.username=dbuser \
+    --set auth.password=dbpass \
+    --set auth.database=dbnorris
+```
+
+Execute `run.sh` to execute `sconectl` applies and deploy the confidential app.
+
+```bash
+export RELEASE=chuck-norris-jokes
+./run.sh
+```
+
+See the jokes in the logs.
+
+```bash
+kubectl logs -f chuck-norris-jokes<TAB>
+```
+
+---
+
+## Test application Locally (Native version)
 
 ### Postgres
 Get a simple database with:
