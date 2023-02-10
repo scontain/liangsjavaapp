@@ -1,3 +1,7 @@
+# TL;DR
+
+./start.sh
+
 ## Test application
 
 ### Postgres
@@ -33,11 +37,11 @@ java -jar build/libs/random-chuck-norris-0.0.1-SNAPSHOT.jar
 Start the first server like this:
 
 ```bash
-java -Dapplication.gossip.url=http://localhost:8081/api/jokes/random -jar build/libs/random-chuck-norris-0.0.1-SNAPSHOT.jar
+java -Dapplication.gossip.url=http://localhost:8080/api/jokes/random -jar build/libs/random-chuck-norris-0.0.1-SNAPSHOT.jar
 ```
 
 Start the second server like this:
 
 ```bash
-java -Dapplication.gossip.url=http://localhost:8080/api/jokes/random -Dserver.port=8081 -jar build/libs/random-chuck-norris-0.0.1-SNAPSHOT.jar
+java -Dapplication.gossip.url=http://localhost:8081/api/jokes/random -Dserver.port=8081 -jar build/libs/random-chuck-norris-0.0.1-SNAPSHOT.jar
 ```

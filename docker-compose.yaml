@@ -1,0 +1,41 @@
+version: '3.5'
+
+services:
+  las:
+    image: registry.scontain.com:5050/sconecuratedimages/services:las-scone5.7.0
+    devices:
+     - "/dev/sgx_enclave"
+     - "/dev/sgx_provision"
+
+  java:
+    image: sconify-java-app-sconify:latest
+    command: java
+    environment:
+     - SCONE_VERSION=1
+    devices:
+      - /dev/sgx_enclave
+    depends_on:
+      - las
+      - postgres
+    ports:
+      - 8080:8080
+
+  java2:
+    image: sconify-java-app-sconify:latest-2
+    command: java
+    environment:
+     - SCONE_VERSION=1
+    devices:
+      - /dev/sgx_enclave
+    depends_on:
+      - las
+      - postgres
+    ports:
+      - 8081:8081
+
+  postgres:
+      image: postgres
+      environment:
+      - POSTGRES_PASSWORD=postgres
+      ports:
+        - "5432:5432"
