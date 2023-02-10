@@ -1,6 +1,7 @@
 package com.verimi.example.randomchucknorris;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -14,10 +15,14 @@ public class RandomLogService {
 
     private final RandomLogRepository randomLogRepository;
 
+    @Value("${application.joke.url}")
+    private String jokeUrl;
+
+    @Value("${application.gossip.url}")
+    private String gossipUrl;
+
     final RestTemplate restTemplate = new RestTemplate();
     final Random random = new Random();
-
-    public static final String URL_PATTERN = "https://api.chucknorris.io/jokes/random?category=";
 
     public RandomLogService(RandomLogRepository randomLogRepository) {
         this.randomLogRepository = randomLogRepository;
@@ -31,12 +36,17 @@ public class RandomLogService {
         } else if (i == 1) {
             return chuckSays("career");
         } else {
-            return chuckSays("political");
+            return chuckSays("dev");
         }
     }
 
+    public String getGossip() {
+        final ResponseEntity<String> gossipResponse = restTemplate.getForEntity(gossipUrl, String.class);
+        return gossipResponse.getBody();
+    }
+
     private String chuckSays(String category) {
-        final ResponseEntity<JsonNode> map = restTemplate.exchange(URL_PATTERN + category, HttpMethod.GET, requestEntity(), JsonNode.class);
+        final ResponseEntity<JsonNode> map = restTemplate.exchange(jokeUrl + category, HttpMethod.GET, requestEntity(), JsonNode.class);
         final String joke = map.getBody().get("value").asText("Chuck Norris");
 
         final Optional<RandomLog> randomLogOptional = randomLogRepository.findByJoke(joke);

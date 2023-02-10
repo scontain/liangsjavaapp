@@ -1,48 +1,58 @@
 stages:
   - build
   - package
-  - test
-  - deploy
-
-.job_template: &job_tags
-  tags:
-    - development
-
-include:
-  - project: 'feature-team/gitlab-pipeline-templates'
-    ref: v0.0.3
-    file: '/templates/common-build.yml'
-  - project: 'feature-team/gitlab-pipeline-templates'
-    ref: v0.0.3
-    file: '/templates/common-docker.yml'
-  - project: 'feature-team/gitlab-pipeline-templates'
-    ref: v0.0.3
-    file: '/templates/common-container-scanning.yml'
-  - project: 'feature-team/gitlab-pipeline-templates'
-    ref: v0.0.3
-    file: '/templates/common-sast.yml'
 
 build:
-  extends: .common-build:build
+  tags:
+    - dev
   stage: build
-  <<: *job_tags
+  image: registry.gitlab.verimi.cloud/devops/ubuntu-cicd-image:v0-java11
   artifacts:
-    paths: 
+    paths:
       - build/libs/*.jar
-    
+  cache:
+    paths:
+      - .gradle/wrapper
+      - .gradle/caches
+  variables:
+    VAULT_ROLE: gitlab-pipeline-templates
+  script:
+    - export VERSION_SUFFIX="$(if [[ $(echo $CI_COMMIT_REF_NAME|cut -c 1-7) == RELEASE ]] || [[ $(echo $CI_COMMIT_REF_NAME|cut -c 1-7) == release ]]; then echo ''; else echo '-SNAPSHOT';fi)"
+    - export VERSION="$(echo ${CI_BUILD_ID}-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_NAME} | tr '/' '_')${VERSION_SUFFIX}"
+    - echo ${VERSION}
+    - ./gradlew clean build -Pversion=${VERSION}
+
+
 docker_build:
-  extends: .common-docker:image-build
+  tags:
+    - dev
   stage: package
-  <<: *job_tags
-
-container_scanning:
-  extends: .common-container-scanning:container-scanning
-  stage: test
-  <<: *job_tags
-
-sast:
-  extends: .common-sast:sast
-  image: docker:stable
-  <<: *job_tags
-  stage: test
+  image: docker:20.10.16
+  variables:
+    #DOCKER_DRIVER: overlay2
+    DOCKER_HOST: tcp://docker:2376
+    DOCKER_TLS_CERTDIR: "/certs"
+    DOCKER_TLS_VERIFY: 0
+    DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
+    IMAGE_NAME: ""
+    WORKING_DIR: "."
+  services:
+    - docker:20.10.16-dind
+  before_script:
+    - docker info
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - export IMAGE_NAME_AS_PATH=$( [ "$IMAGE_NAME" != "" ] && echo "$IMAGE_NAME/" || echo "")
+    - export IMAGE_VERSION="$(echo ${CI_BUILD_ID}-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_NAME} | tr '/' '_')"
+    - export IMAGE_REPO="$(if [[ $(echo $CI_COMMIT_REF_NAME|cut -c 1-7) == RELEASE ]] || [[ $(echo $CI_COMMIT_REF_NAME|cut -c 1-7) == release ]]; then echo release; else echo dev;fi)"
+    - export IMAGE_URL=$CI_REGISTRY_IMAGE/$IMAGE_NAME_AS_PATH$IMAGE_REPO:$IMAGE_VERSION
+  script:
+    - docker build --network host -t $IMAGE_URL ${WORKING_DIR} --build-arg tag=$IMAGE_VERSION
+    - docker push $IMAGE_URL
+    - echo $IMAGE_URL > docker-image.txt
+    - echo $CI_REGISTRY_IMAGE/$IMAGE_NAME_AS_PATH$IMAGE_REPO > docker-image-without-version.txt
+    - echo "docker_build"
+  artifacts:
+    paths:
+      - docker-image.txt
+      - docker-image-without-version.txt
 
