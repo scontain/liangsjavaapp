@@ -23,7 +23,7 @@ build:
   kind: java
   to: $APP_IMAGE_REPO/java_hello_user:java8-postgres
   pwd: /java
-  command: java -jar build/libs/random-chuck-norris-0.0.1-SNAPSHOT.jar
+  command: java -Dspring.datasource.username=chuck -Dspring.datasource.password=securepass123 -Dapplication.gossip.url=http://localhost:8081/api/jokes/random -Dserver.port=8081 -jar build/libs/random-chuck-norris-0.0.1-SNAPSHOT.jar
   copy:
     - build/libs/random-chuck-norris-0.0.1-SNAPSHOT.jar
   host_path:

@@ -14,7 +14,7 @@ source release.sh || true # get release name
 
 DEFAULT_NAMESPACE="" # Default Kubernetes namespace to use
 export APP_IMAGE_REPO=${APP_IMAGE_REPO:=""} # Must be defined!
-export SCONECTL_REPO=${SCONECTL_REPO:="registry.scontain.com/sconectl"}
+export SCONECTL_REPO=${SCONECTL_REPO:="registry.scontain.com/cicd"}
 
 # print an error message on an error exit
 trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
