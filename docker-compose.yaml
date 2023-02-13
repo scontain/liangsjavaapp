@@ -2,7 +2,7 @@ version: '3.5'
 
 services:
   las:
-    image: registry.scontain.com:5050/sconecuratedimages/services:las-scone5.7.0
+    image: registry.scontain.com:5050/sconecuratedimages/kubernetes:las.microsoft-azure
     devices:
      - "/dev/sgx_enclave"
      - "/dev/sgx_provision"
