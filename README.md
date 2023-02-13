@@ -1,4 +1,10 @@
-# TL;DR
+# Confidential Chuck Norris Jokes API
+
+In this repo we show how to sconify a Java application with Scontain tools for lift-and-shifting applications.
+
+This is the Confidential Chuck Norris Jokes API. Enjoy! If you find some bug, do like Chuck Norris. He doesn't need a debugger, he just stares down the bug until the code confesses.
+
+## Deploy with `sconify-image`
 
 ./start.sh
 
@@ -10,10 +16,10 @@ Note: If you do not have the bitnami Helm repo, install with `helm repo add bitn
 
 ```bash
 # user and password are defined in application.properties file.
-helm install postgresql bitnami/postgresql \
-    --set auth.username=dbuser \
-    --set auth.password=dbpass \
-    --set auth.database=dbnorris
+helm install postgres bitnami/postgresql \
+    --set auth.username=chuck \
+    --set auth.password=securepass123 \
+    --set auth.database=chucknorris
 ```
 
 Execute `run.sh` to execute `sconectl` applies and deploy the confidential app.
